@@ -105,7 +105,7 @@ public class CamaraIntentActivity extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            setContentView(R.layout.waiting);
             //RecyclerView.Adapter newImageAdapter = new ImageAdapter(mGalleryFolder);
             //mRecyclerView.swapAdapter(newImageAdapter, false);
 
@@ -122,6 +122,7 @@ public class CamaraIntentActivity extends Activity {
                         Cloud cloud = new Cloud();
                         String url = cloud.upload(mImageFileLocation);
                         goToUrl(url);
+                        //setContentView(R.layout.activity_camara_intent);
                     } catch (IOException e) {
                         //TODO: better error handling when image uploading fails
                         e.printStackTrace();
@@ -130,7 +131,7 @@ public class CamaraIntentActivity extends Activity {
             };
 
             new Thread(runnable).start();
-
+            //runOnUiThread(runnable);
 
         }else{
             Log.d("a","erro");
