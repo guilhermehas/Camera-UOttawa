@@ -15,7 +15,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.File;
@@ -32,7 +36,8 @@ public class CamaraIntentActivity extends Activity {
     private String mImageFileLocation = "";
     private String GALLERY_LOCATION = "image gallery";
     private File mGalleryFolder;
-
+    private String option;
+    private Spinner spinner;
     private RecyclerView mRecyclerView;
 
     @Override
@@ -41,6 +46,13 @@ public class CamaraIntentActivity extends Activity {
         setContentView(R.layout.activity_camara_intent);
 
         createImageGallery();
+
+
+        ArrayAdapter<CharSequence> adapter;
+        spinner = (Spinner) findViewById(R.id.spinner);
+        adapter = ArrayAdapter.createFromResource(this,R.array.search_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 
         //mRecyclerView = (RecyclerView) findViewById(R.id.galleryRecyclerView);
         //RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 1);
@@ -120,7 +132,9 @@ public class CamaraIntentActivity extends Activity {
                 public void run() {
                     try {
                         Cloud cloud = new Cloud();
-                        String url = cloud.upload(mImageFileLocation);
+                        cloud.upload(mImageFileLocation);
+                        option = spinner.getSelectedItem().toString();
+                        String url = cloud.getUrl(option);
                         goToUrl(url);
                         //setContentView(R.layout.activity_camara_intent);
                     } catch (IOException e) {

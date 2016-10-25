@@ -7,6 +7,8 @@ import com.cloudinary.utils.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +19,7 @@ import java.util.Map;
 public class Cloud {
     private final Cloudinary cloudinary;
     private String urlGoogle = "https://images.google.com/searchbyimage?image_url=";
+    private String url;
 
     public Cloud(){
         Map config = new HashMap();
@@ -26,10 +29,19 @@ public class Cloud {
         cloudinary = new Cloudinary(config);
     }
 
-    public String upload(String file) throws IOException {
+    public void upload(String file) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
-        String urlFormat = (String) uploadResult.get("url");
-        String url = urlGoogle+urlFormat;
-        return url;
+        url = (String) uploadResult.get("url");
+    }
+
+    public String getUrl(String option) throws UnsupportedEncodingException {
+        if(option.equals("Google")){
+            return urlGoogle+url;
+        }
+        else{ //Bing upload
+            return "http://www.bing.com/images/search?q=imgurl:" +
+                    URLEncoder.encode(url, "UTF-8") +
+                    "&view=detailv2&iss=sbi&FORM=IRSBIQ#enterInsights";
+        }
     }
 }
