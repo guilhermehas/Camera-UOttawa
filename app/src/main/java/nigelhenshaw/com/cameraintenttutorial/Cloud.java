@@ -29,9 +29,10 @@ public class Cloud {
         cloudinary = new Cloudinary(config);
     }
 
-    public void upload(String file) throws IOException {
+    public String upload(String file) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
         url = (String) uploadResult.get("url");
+        return url;
     }
 
     public String getUrl(String option) throws UnsupportedEncodingException {

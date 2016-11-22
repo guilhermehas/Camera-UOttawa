@@ -1,8 +1,25 @@
 apply plugin: 'com.android.application'
 
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:recyclerview-v7:21.0.+'
+    //compile 'com.android.support:appcompat-v7:22.2.0'
+
+    //compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5'
+    //compile (group: 'org.apache.httpcomponents' , name: 'httpmime' , version: '4.3.5') {
+    //    exclude module: 'org.apache.httpcomponents:httpclient'
+    //}
+
+    //compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
+    // ... other dependencies
+    //compile files('libs/cloudinary-android-1.2.2.jar')
+    //compile files('libs/cloudinary-core-1.2.2.jar')
+}
+
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
+    //useLibrary  'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "nigelhenshaw.com.cameraintenttutorial"
@@ -17,12 +34,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        pickFirst  'META-INF/license.txt'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+    }
 }
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:recyclerview-v7:21.0.+'
-    // ... other dependencies
-    //compile files('libs/cloudinary-android-1.2.2.jar')
-    //compile files('libs/cloudinary-core-1.2.2.jar')
-}
+

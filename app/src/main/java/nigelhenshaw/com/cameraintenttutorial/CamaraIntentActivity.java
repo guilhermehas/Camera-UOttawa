@@ -131,11 +131,19 @@ public class CamaraIntentActivity extends Activity {
                 @Override
                 public void run() {
                     try {
+                        /*
                         Cloud cloud = new Cloud();
                         cloud.upload(mImageFileLocation);
                         option = spinner.getSelectedItem().toString();
                         String url = cloud.getUrl(option);
                         goToUrl(url);
+                        */
+                        Person p = new Person();
+                        option = spinner.getSelectedItem().toString();
+                        String name = p.getName(mImageFileLocation);
+                        String url = p.getUrlApi(option);
+                        goToUrl(url);
+
                         //setContentView(R.layout.activity_camara_intent);
                     } catch (IOException e) {
                         //TODO: better error handling when image uploading fails
