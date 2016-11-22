@@ -47,6 +47,8 @@ public class CamaraIntentActivity extends Activity {
 
         createImageGallery();
 
+        Log.d("aaa","xxx");
+
 
         ArrayAdapter<CharSequence> adapter;
         spinner = (Spinner) findViewById(R.id.spinner);

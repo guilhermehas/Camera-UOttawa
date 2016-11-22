@@ -5,8 +5,12 @@ package nigelhenshaw.com.cameraintenttutorial;
 import android.net.Uri;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -28,57 +32,50 @@ import org.cloudinary.json.JSONArray;
 import org.cloudinary.json.JSONObject;
 
 
-class HttpGetWithEntity extends HttpPost {
-
-    public final static String METHOD_NAME = "GET";
-
-    public HttpGetWithEntity(URI url) {
-        super(url);
-    }
-
-    public HttpGetWithEntity(String url) {
-        super(url);
-    }
-
-    @Override
-    public String getMethod() {
-        return METHOD_NAME;
-    }
-}
-
-
 
 public class FaceAPI
 {
-    public String url = "";
-    public String faceId = "";
-    public String candidate = "";
-    public String name = "";
+    //public String url = "";
+    //public String faceId = "";
+    //public String candidate = "";
+    //public String name = "";
 
-    public void getFaceId()
+
+    //method POST
+    public String getFaceId(String urlFace)
     {
         //HttpClient httpclient = HttpClients.createDefault();
-        Log.d("XXXX","XXXX");
+        //Log.d("XXXX","XXXX");
+        String faceId = "";
 
         try
         {
             Uri.Builder builder = new Uri.Builder();
             builder.scheme("https");
-            builder.authority("api.projectoxford.ai/face/v1.0/detect");
+            builder.authority("api.projectoxford.ai")
+                    .appendPath("face")
+                    .appendPath("v1.0")
+                    .appendPath("detect");
             builder.appendQueryParameter("returnFaceId", "true");
             builder.appendQueryParameter("returnFaceLandmarks", "false");
 
             //URI uri = builder.build();
             URL url = new URL(builder.build().toString());
-            HttpURLConnection request = (HttpURLConnection) url.openConnection();
-            //HttpPost request = new HttpPost(uri);
-            request.setRequestProperty("Content-Type", "application/json");
-            request.setRequestProperty("Ocp-Apim-Subscription-Key", "575e4d4bae464455be8f3b8c9df0d74a");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
+            //connection.setFixedLengthStreamingMode(50);
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            //HttpPost request = new HttpPost(uri);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Ocp-Apim-Subscription-Key", "575e4d4bae464455be8f3b8c9df0d74a");
             //System.out.println(url);
 
             String body = "{\n" +
-                    "    \"url\":\""+url+"\"\n" +
+                    "    \"url\":\""+urlFace+"\"\n" +
                     "}";
 
 
@@ -88,117 +85,201 @@ public class FaceAPI
             //System.out.println(reqEntity);
             //request.setEntity(reqEntity);
 
-            OutputStream os = request.getOutputStream();
-            os.write(body.getBytes());
+
+            //Log.d("body", body);
+            OutputStream output = connection.getOutputStream();
+            //Log.d("CCC", "aquiPassou");
+            DataOutputStream os = new DataOutputStream(output);
+            os.writeBytes(body);
             os.flush();
+            os.close();
+
+            connection.connect();
 
 
-            request.connect();
+            String response = "";
 
-            String response = request.getInputStream().toString();
 
-            if (true)
-            {
-                //System.out.println(EntityUtils.toString(entity));
-                JSONObject json = new JSONArray(response).getJSONObject(0);
-                faceId = json.getString("faceId");
-                Log.d("AAAA",faceId);
+            InputStream iStream = connection.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream, "utf8"));
+            StringBuffer sb = new StringBuffer();
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
             }
 
+            response = sb.toString();
+
+
+             //System.out.println(EntityUtils.toString(entity));
+             //Log.d("AAAA","Before JSON");
+             //Log.d("AAAA",response);
+             JSONObject json = new JSONArray(response).getJSONObject(0);
+             faceId = json.getString("faceId");
+             Log.d("AAAA",faceId);
+
 
         }
-        catch (IOException | ParseException e)
+        catch (IOException e)
         {
+            Log.e("erroDebug", e.getMessage());
             //System.out.println(e.getMessage());
         }
-
+        return faceId;
     }
 
 
-    public void identifyId()
+    public String identifyId(String faceId)
     {
-        HttpClient httpclient = HttpClients.createDefault();
+        String candidate = "";
 
         try
         {
-            URIBuilder builder = new URIBuilder("https://api.projectoxford.ai/face/v1.0/identify");
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("https");
+            builder.authority("api.projectoxford.ai")
+                    .appendPath("face")
+                    .appendPath("v1.0")
+                    .appendPath("identify");
 
 
-            URI uri = builder.build();
-            HttpPost request = new HttpPost(uri);
-            request.setHeader("Content-Type", "application/json");
-            request.setHeader("Ocp-Apim-Subscription-Key", "575e4d4bae464455be8f3b8c9df0d74a");
+            //URIBuilder builder = new URIBuilder("https://api.projectoxford.ai/face/v1.0/identify");
+
+
+            //URI uri = builder.build();
+            URL url = new URL(builder.build().toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            //connection.setFixedLengthStreamingMode(50);
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            //HttpPost request = new HttpPost(uri);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Ocp-Apim-Subscription-Key", "575e4d4bae464455be8f3b8c9df0d74a");
+            //System.out.println(url);
 
 
             String body = "{    \n" +
                     "    \"personGroupId\":\"0\",\n" +
                     "    \"faceIds\":[\n" +
-                    "        \""+faceId+"\",\n" +
+                    "        \""+faceId+"\"\n" +
                     "    ],\n" +
                     "    \"maxNumOfCandidatesReturned\":1,\n" +
                     "    \"confidenceThreshold\": 0.5\n" +
                     "}";
 
-            // Request body
-            StringEntity reqEntity = new StringEntity(body);
-            request.setEntity(reqEntity);
+            Log.d("body",body);
 
-            HttpResponse response = httpclient.execute(request);
-            HttpEntity entity = response.getEntity();
 
-            if (entity != null)
-            {
-                String str = EntityUtils.toString(entity);
-                System.out.println(str);
-                candidate = (new JSONArray(str)).getJSONObject(0).getJSONArray("candidates").getJSONObject(0).getString("personId");
+            OutputStream output = connection.getOutputStream();
+            //Log.d("CCC", "aquiPassou");
+            DataOutputStream os = new DataOutputStream(output);
+            os.writeBytes(body);
+            os.flush();
+            os.close();
+            connection.connect();
+
+            String response = "";
+
+
+            InputStream iStream = connection.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream, "utf8"));
+            StringBuffer sb = new StringBuffer();
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
             }
+
+            response = sb.toString();
+
+
+            Log.d("HHHH",response);
+            candidate = (new JSONArray(response)).getJSONObject(0).getJSONArray("candidates").getJSONObject(0).getString("personId");
+
         }
 
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
+        catch (Exception e) {
+            Log.e("erroaqui", e.getMessage());
         }
+        return candidate;
     }
 
 
-    public void idToName()
+    public String idToName(String candidate)
     {
-        HttpClient httpclient = HttpClients.createDefault();
+        String name = "";
 
         try
         {
-            URIBuilder builder = new URIBuilder("https://api.projectoxford.ai/face/v1.0/persongroups/0/persons/"+candidate);
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("https");
+            builder.authority("api.projectoxford.ai")
+                    .appendPath("face")
+                    .appendPath("v1.0")
+                    .appendPath("persongroups")
+                    .appendPath("0")
+                    .appendPath("persons")
+                    .appendPath(candidate);
 
+            //URIBuilder builder = new URIBuilder("https://api.projectoxford.ai/face/v1.0/persongroups/0/persons/"+candidate);
 
-            URI uri = builder.build();
-            HttpGet request = new HttpGet(uri);
-            request.setHeader("Ocp-Apim-Subscription-Key", "575e4d4bae464455be8f3b8c9df0d74a");
+            Log.d("urlAqui", builder.build().toString());
+            URL url = new URL(builder.build().toString());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
+            //connection.setFixedLengthStreamingMode(50);
+            //connection.setReadTimeout(10000);
+            //connection.setConnectTimeout(15000);
+            //connection.setRequestMethod("GET");
+            //connection.setDoInput(true);
+            //connection.setDoOutput(true);
+            //HttpPost request = new HttpPost(uri);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Ocp-Apim-Subscription-Key", "575e4d4bae464455be8f3b8c9df0d74a");
+            //System.out.println(url);
 
-            HttpResponse response = httpclient.execute(request);
-            HttpEntity entity = response.getEntity();
+            Log.d("passouaqui","1");
+            //connection.connect();
 
-            if (entity != null)
-            {
-                String str = EntityUtils.toString(entity);
-                System.out.println(str);
-                name = new JSONObject(str).getString("name");
+            String response = "";
+            Log.d("passouaqui","2");
+
+            InputStream iStream = connection.getInputStream();
+            Log.d("passouaqui","3");
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream, "utf8"));
+            StringBuffer sb = new StringBuffer();
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
             }
+
+            response = sb.toString();
+
+            Log.d("response",response);
+            name = new JSONObject(response).getString("name");
+
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            Log.d("erroaqui", e.getMessage());
         }
+
+        return name;
     }
 
     public String getName(String url){
-        this.url = url;
-        getFaceId();
+        String faceId = getFaceId(url);
         //System.out.println(faceId);
         if(!faceId.equals("")){
-            identifyId();
+            String candidate = identifyId(faceId);
             if(!candidate.equals("")){
-                idToName();
+                String name = idToName(candidate);
                 return name;
             }
         }
