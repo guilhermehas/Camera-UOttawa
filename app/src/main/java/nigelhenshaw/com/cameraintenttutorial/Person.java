@@ -1,5 +1,7 @@
 package nigelhenshaw.com.cameraintenttutorial;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,7 +17,8 @@ public class Person {
     private String urlBing;
     public String getName(String f) throws IOException {
         String url = new Cloud().upload(f);
-        String name = new FaceAPI().getName(url);
+        Log.d("CloudURL",url);
+        name = new FaceAPI().getName(url);
         return name;
     }
 

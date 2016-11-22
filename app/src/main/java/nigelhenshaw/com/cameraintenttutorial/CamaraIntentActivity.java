@@ -143,6 +143,7 @@ public class CamaraIntentActivity extends Activity {
                         Person p = new Person();
                         option = spinner.getSelectedItem().toString();
                         String name = p.getName(mImageFileLocation);
+                        Log.d("NomeEncontrado",name);
                         String url = p.getUrlApi(option);
                         goToUrl(url);
 
