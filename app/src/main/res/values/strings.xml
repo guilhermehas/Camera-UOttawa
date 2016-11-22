@@ -6,6 +6,5 @@
 
     <string-array name="search_options">
         <item>Google</item>
-        <item>Bing</item>
     </string-array>
 </resources>
