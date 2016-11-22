@@ -2,10 +2,17 @@ package nigelhenshaw.com.cameraintenttutorial;
 
 
 // // This sample uses the Apache HTTP client from HTTP Components (http://hc.apache.org/httpcomponents-client-ga/)
+import android.net.Uri;
+import android.util.Log;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -50,19 +57,23 @@ public class FaceAPI
 
     public void getFaceId()
     {
-        HttpClient httpclient = HttpClients.createDefault();
+        //HttpClient httpclient = HttpClients.createDefault();
+        Log.d("XXXX","XXXX");
 
         try
         {
-            URIBuilder builder = new URIBuilder("https://api.projectoxford.ai/face/v1.0/detect");
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("https");
+            builder.authority("api.projectoxford.ai/face/v1.0/detect");
+            builder.appendQueryParameter("returnFaceId", "true");
+            builder.appendQueryParameter("returnFaceLandmarks", "false");
 
-            builder.setParameter("returnFaceId", "true");
-            builder.setParameter("returnFaceLandmarks", "false");
-
-            URI uri = builder.build();
-            HttpPost request = new HttpPost(uri);
-            request.setHeader("Content-Type", "application/json");
-            request.setHeader("Ocp-Apim-Subscription-Key", "575e4d4bae464455be8f3b8c9df0d74a");
+            //URI uri = builder.build();
+            URL url = new URL(builder.build().toString());
+            HttpURLConnection request = (HttpURLConnection) url.openConnection();
+            //HttpPost request = new HttpPost(uri);
+            request.setRequestProperty("Content-Type", "application/json");
+            request.setRequestProperty("Ocp-Apim-Subscription-Key", "575e4d4bae464455be8f3b8c9df0d74a");
 
             //System.out.println(url);
 
@@ -70,28 +81,35 @@ public class FaceAPI
                     "    \"url\":\""+url+"\"\n" +
                     "}";
 
+
             //System.out.println(body);
             // Request body
-            StringEntity reqEntity = new StringEntity(body);
+            //StringEntity reqEntity = new StringEntity(body);
             //System.out.println(reqEntity);
-            request.setEntity(reqEntity);
+            //request.setEntity(reqEntity);
 
-            HttpResponse response = httpclient.execute(request);
-            HttpEntity entity = response.getEntity();
+            OutputStream os = request.getOutputStream();
+            os.write(body.getBytes());
+            os.flush();
 
-            if (entity != null)
+
+            request.connect();
+
+            String response = request.getInputStream().toString();
+
+            if (true)
             {
                 //System.out.println(EntityUtils.toString(entity));
-                JSONObject json = new JSONArray(EntityUtils.toString(entity)).getJSONObject(0);
+                JSONObject json = new JSONArray(response).getJSONObject(0);
                 faceId = json.getString("faceId");
-                System.out.println(faceId);
+                Log.d("AAAA",faceId);
             }
 
 
         }
-        catch (URISyntaxException | IOException | ParseException e)
+        catch (IOException | ParseException e)
         {
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
         }
 
     }
@@ -176,7 +194,7 @@ public class FaceAPI
     public String getName(String url){
         this.url = url;
         getFaceId();
-        System.out.println(faceId);
+        //System.out.println(faceId);
         if(!faceId.equals("")){
             identifyId();
             if(!candidate.equals("")){
