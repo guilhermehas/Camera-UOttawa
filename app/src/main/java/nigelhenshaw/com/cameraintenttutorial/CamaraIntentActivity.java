@@ -20,7 +20,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +42,8 @@ public class CamaraIntentActivity extends Activity {
     private String option;
     private Spinner spinner;
     private RecyclerView mRecyclerView;
-
+    private TextView textview;
+    private String strMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,24 +103,25 @@ public class CamaraIntentActivity extends Activity {
 
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
         if(requestCode == ACTIVITY_START_CAMERA_APP && resultCode == RESULT_OK) {
+            setContentView(R.layout.waiting);
+            textview = (TextView) findViewById(R.id.editText);
 
             try {
                 UploadAndMove();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            setContentView(R.layout.waiting);
 
         }
     }
 
     private void UploadAndMove() throws IOException {
         if(mImageFileLocation != ""){
-
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
                     try {
+
                         Person p = new Person();
                         option = spinner.getSelectedItem().toString();
                         String name = p.getName(mImageFileLocation);
@@ -125,13 +130,19 @@ public class CamaraIntentActivity extends Activity {
                             String url = p.getUrlApi(option);
                             goToUrl(url);
                         }else{
-                            String str = "erro";
+                            strMessage = "erro";
                             if(name.equals("@1")){
-                                str = "Cant find face";
+                                strMessage = "Cant find face";
                             }
                             else if(name.equals("@2")){
-                                str = "Cant find candidate";
+                                strMessage = "Cant find someone with that face";
                             }
+                            runOnUiThread(new Runnable(){
+                                @Override
+                                public void run() {
+                                    textview.setText(strMessage);
+                                }
+                            });
                         }
 
                     } catch (IOException e) {
