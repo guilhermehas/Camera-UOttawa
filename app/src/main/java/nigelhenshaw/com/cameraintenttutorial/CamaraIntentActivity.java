@@ -120,9 +120,19 @@ public class CamaraIntentActivity extends Activity {
                         Person p = new Person();
                         option = spinner.getSelectedItem().toString();
                         String name = p.getName(mImageFileLocation);
-                        Log.d("NomeEncontrado",name);
-                        String url = p.getUrlApi(option);
-                        goToUrl(url);
+
+                        if(!name.isEmpty() && name.charAt(0) != '@') {
+                            String url = p.getUrlApi(option);
+                            goToUrl(url);
+                        }else{
+                            String str = "erro";
+                            if(name.equals("@1")){
+                                str = "Cant find face";
+                            }
+                            else if(name.equals("@2")){
+                                str = "Cant find candidate";
+                            }
+                        }
 
                     } catch (IOException e) {
                         //TODO: better error handling when image uploading fails

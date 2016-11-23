@@ -16,10 +16,19 @@ public class Person {
     private String urlGoogle = "http://www.google.com/search?q=";
     private String urlBing;
     public String getName(String f) throws IOException {
-        String url = new Cloud().upload(f);
-        Log.d("CloudURL",url);
-        name = new FaceAPI().getName(url);
-        return name;
+        String url;
+        try {
+            url = new Cloud().upload(f);
+            Log.d("CloudURL",url);
+        }catch (Error e){
+            return "@3";
+        }
+        try{
+            name = new FaceAPI().getName(url);
+            return name;
+        }catch (Error e){
+            return "@4";
+        }
     }
 
     public String getUrlApi(String option) throws UnsupportedEncodingException {

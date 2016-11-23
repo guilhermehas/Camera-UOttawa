@@ -23,7 +23,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
             }
         };
         new Thread(runnable).start();
-        SystemClock.sleep(12000);
+        SystemClock.sleep(4000);
 
     }
 
