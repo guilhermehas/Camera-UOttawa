@@ -56,11 +56,6 @@ public class CamaraIntentActivity extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        //mRecyclerView = (RecyclerView) findViewById(R.id.galleryRecyclerView);
-        //RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 1);
-        //mRecyclerView.setLayoutManager(layoutManager);
-        //RecyclerView.Adapter imageAdapter = new ImageAdapter(mGalleryFolder);
-        //mRecyclerView.setAdapter(imageAdapter);
 
     }
 
@@ -100,19 +95,10 @@ public class CamaraIntentActivity extends Activity {
         }
         callCameraApplicationIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
         startActivityForResult(callCameraApplicationIntent, ACTIVITY_START_CAMERA_APP);
-        //String url = new Cloud().upload(new File());
-        //Log.d("a",url);
     }
 
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
         if(requestCode == ACTIVITY_START_CAMERA_APP && resultCode == RESULT_OK) {
-            // Toast.makeText(this, "Picture taken successfully", Toast.LENGTH_SHORT).show();
-            // Bundle extras = data.getExtras();
-            // Bitmap photoCapturedBitmap = (Bitmap) extras.get("data");
-            // mPhotoCapturedImageView.setImageBitmap(photoCapturedBitmap);
-            // Bitmap photoCapturedBitmap = BitmapFactory.decodeFile(mImageFileLocation);
-            // mPhotoCapturedImageView.setImageBitmap(photoCapturedBitmap);
-            // setReducedImageSize();
 
             try {
                 UploadAndMove();
@@ -120,8 +106,6 @@ public class CamaraIntentActivity extends Activity {
                 e.printStackTrace();
             }
             setContentView(R.layout.waiting);
-            //RecyclerView.Adapter newImageAdapter = new ImageAdapter(mGalleryFolder);
-            //mRecyclerView.swapAdapter(newImageAdapter, false);
 
         }
     }
@@ -133,13 +117,6 @@ public class CamaraIntentActivity extends Activity {
                 @Override
                 public void run() {
                     try {
-                        /*
-                        Cloud cloud = new Cloud();
-                        cloud.upload(mImageFileLocation);
-                        option = spinner.getSelectedItem().toString();
-                        String url = cloud.getUrl(option);
-                        goToUrl(url);
-                        */
                         Person p = new Person();
                         option = spinner.getSelectedItem().toString();
                         String name = p.getName(mImageFileLocation);
@@ -147,7 +124,6 @@ public class CamaraIntentActivity extends Activity {
                         String url = p.getUrlApi(option);
                         goToUrl(url);
 
-                        //setContentView(R.layout.activity_camara_intent);
                     } catch (IOException e) {
                         //TODO: better error handling when image uploading fails
                         e.printStackTrace();
@@ -156,10 +132,9 @@ public class CamaraIntentActivity extends Activity {
             };
 
             new Thread(runnable).start();
-            //runOnUiThread(runnable);
 
         }else{
-            Log.d("a","erro");
+            Log.e("a","erro");
         }
     }
 
